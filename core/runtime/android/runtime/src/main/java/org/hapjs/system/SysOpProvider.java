@@ -12,6 +12,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+
 import androidx.appcompat.widget.Toolbar;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +117,8 @@ public interface SysOpProvider {
 
     boolean allowNightModeInAndroidVersion();
 
+    boolean handleImageForceDark(ImageView imageView, boolean forceDark);
+
     boolean isAllowProfiler();
 
     ComponentName get5gMgrComponent();
@@ -148,4 +152,9 @@ public interface SysOpProvider {
 
         void isMenubarDataCollect(String packageName, boolean isCollected);
     }
+
+    int getScreenWidthPixels(Context context, int platformVersion);
+
+    int getScreenHeightPixels(Context context, int platformVersion);
+
 }

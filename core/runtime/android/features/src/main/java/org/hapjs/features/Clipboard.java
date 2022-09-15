@@ -24,36 +24,27 @@ import org.json.JSONObject;
         })
 public class Clipboard extends FeatureExtension {
 
-    protected static final String FEATURE_NAME = "system.clipboard";
-    protected static final String ACTION_SET = "set";
-    protected static final String ACTION_GET = "get";
+    public static final String FEATURE_NAME = "system.clipboard";
+    public static final String ACTION_SET = "set";
+    public static final String ACTION_GET = "get";
 
     protected static final String PARAM_KEY_TEXT = "text";
 
-    private ClipboardManager mClipboard;
+    protected ClipboardManager mClipboard;
 
     @Override
     protected Response invokeInner(final Request request) throws Exception {
         if (mClipboard == null) {
-            request
-                    .getNativeInterface()
-                    .getActivity()
-                    .runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Context context = request.getNativeInterface().getActivity();
-                                    mClipboard =
-                                            (ClipboardManager) context
-                                                    .getSystemService(Context.CLIPBOARD_SERVICE);
-                                    try {
-                                        invokeInner(request);
-                                    } catch (Exception e) {
-                                        request.getCallback()
-                                                .callback(getExceptionResponse(request, e));
-                                    }
-                                }
-                            });
+            Context context = request.getNativeInterface().getActivity();
+            mClipboard =
+                    (ClipboardManager) context
+                            .getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                invokeInner(request);
+            } catch (Exception e) {
+                request.getCallback()
+                        .callback(getExceptionResponse(request, e));
+            }
         } else {
             String action = request.getAction();
             if (ACTION_SET.equals(action)) {
@@ -61,11 +52,12 @@ public class Clipboard extends FeatureExtension {
             } else {
                 get(request);
             }
+            recordClipboardFeature(request);
         }
         return Response.SUCCESS;
     }
 
-    private void set(final Request request) throws JSONException {
+    protected void set(final Request request) throws JSONException {
         JSONObject params = new JSONObject(request.getRawParams());
         String text = params.getString(PARAM_KEY_TEXT);
         ClipData clip = ClipData.newPlainText("text", text);
@@ -73,7 +65,7 @@ public class Clipboard extends FeatureExtension {
         request.getCallback().callback(Response.SUCCESS);
     }
 
-    private void get(final Request request) throws JSONException {
+    protected void get(final Request request) throws JSONException {
         String text = null;
         ClipData clip = mClipboard.getPrimaryClip();
         if (clip != null) {
@@ -88,6 +80,9 @@ public class Clipboard extends FeatureExtension {
         JSONObject result = new JSONObject();
         result.put(PARAM_KEY_TEXT, text);
         request.getCallback().callback(new Response(result));
+    }
+
+    protected void recordClipboardFeature(Request request) {
     }
 
     @Override
