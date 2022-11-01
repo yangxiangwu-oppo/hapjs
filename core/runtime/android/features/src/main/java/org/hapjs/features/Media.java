@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, the hapjs-platform Project Contributors
+ * Copyright (c) 2021-2022, the hapjs-platform Project Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -586,7 +586,7 @@ public class Media extends FeatureExtension {
                                         new SetRingtoneTask(request, underUri, type, title).execute();
                                     }
                                 } else {
-                                    request.getCallback().callback(Response.USER_DENIED);
+                                    request.getCallback().callback(Response.getUserDeniedResponse(false));
                                 }
                             }
                         },
@@ -790,7 +790,10 @@ public class Media extends FeatureExtension {
     }
 
     private String getFileName(String uri) {
-        int index = uri.lastIndexOf("/");
+        int index = 0;
+        if (uri != null) {
+            index = uri.lastIndexOf("/");
+        }
         if (index > 0) {
             return uri.substring(index + 1);
         } else {

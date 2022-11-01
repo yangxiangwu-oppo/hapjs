@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, the hapjs-platform Project Contributors
+ * Copyright (c) 2021-2022, the hapjs-platform Project Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -86,6 +86,8 @@ public class RuntimeLogManager {
     private static final String KEY_MENU_BAR_SHARE_RESULT = "menuBarShareResult";
     private static final String KEY_MENU_BAR_SHARE_ERROR = "menuBarShareError";
     private static final String KEY_MENU_BAR_SHARE_CANCEL = "menuBarShareCancel";
+    private static final String KEY_ILLEGAL_ACCESS_FILE = "illegalAccessFile";
+
     private static final String PARAM_TIME_START = "startTime";
     private static final String PARAM_TIME_END = "endTime";
     private static final String PARAM_ACTION = "action";
@@ -116,6 +118,8 @@ public class RuntimeLogManager {
     private static final String PARAM_TASK_NAME = "taskName";
     private static final String PARAM_TASK_COST = "taskCost";
     private static final String PARAM_MENU_BAR_SHARE_PLATFORM = "menuBarSharePlatform";
+    private static final String PARAM_FILE_PATH = "file_path";
+
     private static final String STATE_APP_LOAD = "appLoad";
     private static final String STATE_PAGE_VIEW = "pageView";
     private static final String STATE_PAGE_LOAD = "pageLoad";
@@ -137,6 +141,14 @@ public class RuntimeLogManager {
     public static final String KEY_RPK_ROUTER_RPK = "routerRpk";
     public static final String KEY_APP_ROUTER_RPK_DIALOG_SHOW = "routerRpkDialogShow";
     public static final String KEY_APP_ROUTER_RPK_DIALOG_CLICK = "routerRpkDialogClick";
+    // share button
+    public static final String KEY_APP_SHARE_BUTTON_SHOW = "shareButtonShow";
+    public static final String KEY_APP_SHARE_BUTTON_CLICK = "shareButtonClick";
+    //shortcut tips
+    public static final String KEY_APP_EVENT_BUTTON_SHOW = "eventbuttonShow";
+    public static final String KEY_APP_EVENT_BUTTON_CLICK = "eventbuttonClick";
+    public static final String KEY_APP_EVENT_BUTTON_TIPS_SHOW = "eventbuttonTipsShow";
+
     private Map<Object, Object> mStates;
     private Object mStateLock;
 
@@ -1009,6 +1021,15 @@ public class RuntimeLogManager {
 
     private static class Holder {
         static final RuntimeLogManager INSTANCE = new RuntimeLogManager();
+    }
+
+    public void recordIllegalAccessFile(String pkg, String filePath) {
+        if (mProvider == null) {
+            return;
+        }
+        Map<String, String> params = new HashMap<>();
+        params.put(PARAM_FILE_PATH, filePath);
+        mProvider.logCountEvent(pkg, CATEGORY_APP, KEY_ILLEGAL_ACCESS_FILE, params);
     }
 
     private static class DiskUsageTask implements Runnable {
